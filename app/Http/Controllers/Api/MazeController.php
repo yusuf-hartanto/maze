@@ -10,45 +10,40 @@ class MazeController extends Controller
     public function generate(Request $request)
     {
         $result = '';
+        $door = 'left';
         $suku = $request->suku;
-
-        if($this->cek($suku)){
+        
+        if($this->cek($suku) || $suku == '3'){
             return $this->response($suku, 'failed', false);
         }
 
-        $repeat = $suku - 2;
-        $left = "<span>@</span>"."<label style='min-width:15.28px;'>&nbsp;</label>".str_repeat("<span>@</span>", $repeat);
-        $road = "<span>@</span>".str_repeat("<label style='min-width:15.28px;'>&nbsp;</label>", $repeat)."<span>@</span>";
-        $right = str_repeat("<span>@</span>", $repeat)."<label style='min-width:15.28px;'>&nbsp;</label>"."<span>@</span>";
-    
-        $leftSts = true;
-        $roadSts = false;
-        $rightSts = false;
-        $leftCount = 0;
-        $rightCount = 0;
-        
-        for($j=0;$j<$suku;$j++){
-            $result = $result."<div style='height:20px;'>";
-            if($leftSts){
-                $result = $result.$left;
-                $leftSts = false;
-                $roadSts = true;
-                $leftCount++;
-            } else if($roadSts){
-                $result = $result.$road;
-                if($leftCount == $rightCount){
-                    $leftSts = true;
-                } else {
-                    $rightSts = true;	
+        for($lineX = 1; $lineX <= $suku; $lineX++){
+            $result .= '<div style="height:20px;"><span>@</span>';
+            
+            if($lineX % 2 > 0){
+            for($lineY = 1; $lineY <= ($suku - 2); $lineY++){
+                if($door == 'left' && $lineY == 1){
+                    $result .='<label style="min-width:15.28px;">&nbsp;</label>';
+                }else if($door=='right' && $lineY == ($suku - 2)){
+                    $result .='<label style="min-width:15.28px;">&nbsp;</label>';  
+                }else{
+                    $result .='<span>@</span>';
                 }
-                $roadSts = false;
-            } else if($rightSts){
-                $result = $result.$right;
-                $rightSts = false;
-                $roadSts = true;
-                $rightCount++;
             }
-            $result = $result."</div>";
+            
+            if($door == 'left'){
+                $door = 'right';
+            }else{
+                $door = 'left';
+            }
+
+            }else{
+                for($lineY = 1; $lineY <= ($suku -2); $lineY++){
+                    $result .= '<label style="min-width:15.28px;">&nbsp;</label>';
+                }
+            }
+            
+            $result .= '<span>@</span></div>';
         }
 
         return $this->response($result);

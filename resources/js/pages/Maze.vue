@@ -74,11 +74,13 @@
 
                 if(!this.$v.$error) {
                     this.isLoading = true
+                    this.isMaze = false
 
                     try {
                         const res = await axios.post(`generate`, { suku: this.suku })
                         const { status, data } = res.data
                         this.isLoading = false
+                        console.log(status, data)
 
                         if(status) {
                             this.isMaze = true
